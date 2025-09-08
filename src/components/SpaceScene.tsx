@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { OrbitControls, Stars } from '@react-three/drei'
 import { CentralObject } from './CentralObject'
@@ -9,11 +10,10 @@ export const SpaceScene = () => {
         camera={{ position: [0, 0, 10], fov: 75 }}
         style={{ background: '#0a0a0f' }}
       >
-        {/* Ambient lighting */}
-        <ambientLight intensity={0.1} />
-        
-        {/* Point light for central object glow */}
-        <pointLight position={[0, 0, 0]} intensity={2} color="#4da6ff" />
+        {/* Lighting */}
+        <ambientLight intensity={0.2} />
+        <directionalLight position={[-5, 2, 5]} intensity={0.8} />
+        <pointLight position={[5, 5, 5]} intensity={1.2} color="#4da6ff" />
         
         {/* Stars scattered throughout space */}
         <Stars
@@ -26,7 +26,9 @@ export const SpaceScene = () => {
         />
         
         {/* Central glowing object */}
-        <CentralObject />
+        <Suspense fallback={null}>
+          <CentralObject />
+        </Suspense>
         
         {/* Orbit controls for navigation */}
         <OrbitControls
