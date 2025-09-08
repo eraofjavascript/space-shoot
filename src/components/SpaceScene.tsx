@@ -10,7 +10,7 @@ export const SpaceScene = () => {
     <div className="relative w-full h-screen">
       {active ? (
         // Loading state - simple gradient background
-        <div className="w-full h-full bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-end justify-center pb-32">
+        <div className="w-full h-full bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
           <div className="flex flex-col items-center justify-center">
             <div className="relative">
               <div className="w-20 h-20 rounded-full border-2 border-cyan-400 animate-pulse shadow-[0_0_20px_#22d3ee]" />
@@ -27,7 +27,7 @@ export const SpaceScene = () => {
         <>
           <div className="w-full h-full bg-cosmic-void">
             <Canvas
-              camera={{ position: [0, 0, 10], fov: 75 }}
+              camera={{ position: [0, 2, 10], fov: 75 }}
               style={{ background: '#0a0a0f' }}
             >
               {/* Lighting */}
