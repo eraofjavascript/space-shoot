@@ -16,14 +16,15 @@ export const SpaceScene = () => {
         <directionalLight position={[-5, 2, 5]} intensity={0.8} />
         <pointLight position={[5, 5, 5]} intensity={1.2} color="#4da6ff" />
         
-        {/* Stars scattered throughout space */}
+        {/* Static bright stars */}
         <Stars
           radius={100}
           depth={50}
           count={5000}
           factor={4}
           saturation={0}
-          fade={true}
+          fade={false}
+          speed={0}
         />
         
         {/* Central glowing object */}
@@ -31,7 +32,7 @@ export const SpaceScene = () => {
           <CentralObject />
         </Suspense>
         
-        {/* Orbit controls for navigation */}
+        {/* Orbit controls for navigation - no auto rotation */}
         <OrbitControls
           enablePan={true}
           enableZoom={true}
@@ -39,7 +40,7 @@ export const SpaceScene = () => {
           minDistance={3}
           maxDistance={50}
           autoRotate={false}
-          autoRotateSpeed={0.5}
+          autoRotateSpeed={0}
         />
       </Canvas>
     </div>
