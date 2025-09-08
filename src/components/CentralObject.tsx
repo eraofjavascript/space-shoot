@@ -7,15 +7,7 @@ export const CentralObject = () => {
   const { scene } = useGLTF('/scene.gltf')
   const modelRef = useRef<THREE.Group>(null!)
 
-  useFrame((state) => {
-    const time = state.clock.getElapsedTime()
-    
-    // Gentle rotation of the X-Wing
-    if (modelRef.current) {
-      modelRef.current.rotation.y = time * 0.3
-      modelRef.current.rotation.x = Math.sin(time * 0.2) * 0.1
-    }
-  })
+  // No auto-rotation - user controls only
 
   useEffect(() => {
     // Debug: confirm component render and GLTF path

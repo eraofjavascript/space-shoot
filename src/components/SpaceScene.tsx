@@ -2,6 +2,7 @@ import { Suspense } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { OrbitControls, Stars } from '@react-three/drei'
 import { CentralObject } from './CentralObject'
+import LoadingScreen from './LoadingScreen'
 
 export const SpaceScene = () => {
   return (
@@ -26,7 +27,7 @@ export const SpaceScene = () => {
         />
         
         {/* Central glowing object */}
-        <Suspense fallback={null}>
+        <Suspense fallback={<LoadingScreen />}>
           <CentralObject />
         </Suspense>
         
