@@ -13,14 +13,24 @@ export const CentralObject = ({ controlsRef }: { controlsRef?: React.RefObject<a
   }, [])
 
   // Continuous forward movement with orbit controls compatibility
-  useFrame(() => {
+  useFrame((state) => {
     if (modelRef.current) {
+      // Store previous position
+      const prevZ = modelRef.current.position.z
+      
       // Move forward continuously at constant speed
       modelRef.current.position.z -= 0.1
       
-      // Update orbit controls target to follow the model if available
+      // Calculate movement delta
+      const deltaZ = modelRef.current.position.z - prevZ
+      
+      // Update orbit controls target and camera to follow the model
       if (controlsRef?.current) {
         controlsRef.current.target.copy(modelRef.current.position)
+        
+        // Also move the camera by the same delta to maintain distance
+        state.camera.position.z += deltaZ
+        
         controlsRef.current.update()
       }
     }
