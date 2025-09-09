@@ -3,7 +3,7 @@ import { useGLTF } from '@react-three/drei'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 
-export const CentralObject = () => {
+export const CentralObject = ({ controlsRef }: { controlsRef?: React.RefObject<any> }) => {
   const { scene } = useGLTF('/scene.gltf')
   const modelRef = useRef<THREE.Group>(null!)
 
@@ -12,11 +12,17 @@ export const CentralObject = () => {
     console.log('CentralObject: using GLTF at /scene.gltf')
   }, [])
 
-  // Continuous forward movement
+  // Continuous forward movement with orbit controls compatibility
   useFrame(() => {
     if (modelRef.current) {
       // Move forward continuously at constant speed
       modelRef.current.position.z -= 0.1
+      
+      // Update orbit controls target to follow the model if available
+      if (controlsRef?.current) {
+        controlsRef.current.target.copy(modelRef.current.position)
+        controlsRef.current.update()
+      }
     }
   })
 

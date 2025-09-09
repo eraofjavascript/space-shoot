@@ -1,10 +1,11 @@
-import { Suspense } from 'react'
+import { Suspense, useRef } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { OrbitControls, Stars, useProgress } from '@react-three/drei'
 import { CentralObject } from './CentralObject'
 
 export const SpaceScene = () => {
   const { active, progress } = useProgress()
+  const controlsRef = useRef<any>(null)
   
   return (
     <div className="relative w-full h-screen">
@@ -51,11 +52,12 @@ export const SpaceScene = () => {
               
               {/* Central glowing object */}
               <Suspense fallback={null}>
-                <CentralObject />
+                <CentralObject controlsRef={controlsRef} />
               </Suspense>
               
               {/* Orbit controls for navigation - rotation only */}
               <OrbitControls
+                ref={controlsRef}
                 enablePan={false}
                 enableZoom={false}
                 enableRotate={true}
