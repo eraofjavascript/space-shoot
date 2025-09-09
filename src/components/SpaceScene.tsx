@@ -1,11 +1,13 @@
-import { Suspense, useRef } from 'react'
+import { Suspense, useRef, useState } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { OrbitControls, Stars, useProgress } from '@react-three/drei'
 import { CentralObject } from './CentralObject'
+import { MobileControls } from './MobileControls'
 
 export const SpaceScene = () => {
   const { active, progress } = useProgress()
   const controlsRef = useRef<any>(null)
+  const [centralObjectRef, setCentralObjectRef] = useState<any>(null)
   
   return (
     <div className="relative w-full h-screen">
@@ -81,6 +83,14 @@ export const SpaceScene = () => {
               <div className="absolute bottom-0 left-1/2 w-px h-2 bg-cyan-400/80 -translate-x-1/2 shadow-[0_0_4px_#22d3ee]" />
             </div>
           </div>
+          
+          {/* Mobile Controls */}
+          <MobileControls
+            onUpPress={() => (CentralObject as any).setVerticalInput?.(1)}
+            onUpRelease={() => (CentralObject as any).setVerticalInput?.(0)}
+            onDownPress={() => (CentralObject as any).setVerticalInput?.(-1)}
+            onDownRelease={() => (CentralObject as any).setVerticalInput?.(0)}
+          />
         </>
       )}
     </div>
