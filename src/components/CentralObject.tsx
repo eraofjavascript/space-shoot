@@ -14,7 +14,7 @@ export const CentralObject = () => {
   }, [])
 
   return (
-    <group ref={modelRef} position={[0, 1.5, 0]} scale={0.6}>
+    <group ref={modelRef} position={[0, -1, 0]} scale={0.6}>
       <primitive object={scene} />
     </group>
   )
