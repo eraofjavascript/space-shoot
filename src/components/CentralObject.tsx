@@ -73,7 +73,7 @@ export const CentralObject = ({ controlsRef }: { controlsRef?: React.RefObject<a
       if (verticalInput !== 0) {
         model.position.y += verticalInput * 0.05
         model.rotation.x += verticalInput * 0.02
-        model.rotation.x = THREE.MathUtils.clamp(model.rotation.x, -0.8, 0.8)
+        // Removed clamp to allow full 360-degree rotation
       }
 
       // ALWAYS move forward in the direction the model is facing
