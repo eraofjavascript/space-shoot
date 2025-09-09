@@ -42,46 +42,60 @@ export const CentralObject = ({ controlsRef }: { controlsRef?: React.RefObject<a
     }
   }, [handleKeyDown, handleKeyUp])
 
-  // Continuous movement with physics-like rotation
+  // Track orbiting interactions to blend camera control
+  const isOrbitingRef = useRef(false)
+  useEffect(() => {
+    const controls = controlsRef?.current
+    if (!controls) return
+    const onStart = () => (isOrbitingRef.current = true)
+    const onEnd = () => (isOrbitingRef.current = false)
+    controls.addEventListener('start', onStart)
+    controls.addEventListener('end', onEnd)
+    return () => {
+      controls.removeEventListener('start', onStart)
+      controls.removeEventListener('end', onEnd)
+    }
+  }, [controlsRef])
+  ;(CentralObject as any)._isOrbiting = () => isOrbitingRef.current
+
+  // Continuous movement aligned with facing direction and orbit compatibility
   useFrame((state) => {
     if (modelRef.current) {
-      // Store previous position
-      const prevZ = modelRef.current.position.z
-      const prevY = modelRef.current.position.y
-      
-      // Base forward movement
+      const model = modelRef.current
+
+      // Cache previous transforms
+      const prevModelPos = model.position.clone()
+      const prevCamOffset = state.camera.position.clone().sub(prevModelPos)
+
       const forwardSpeed = 0.1
-      
-      // Apply vertical input with physics-like behavior
+
+      // Vertical input influences pitch and altitude
       if (verticalInput !== 0) {
-        // Vertical movement
-        modelRef.current.position.y += verticalInput * 0.05
-        
-        // Rotation based on vertical movement (pitch)
-        modelRef.current.rotation.x += verticalInput * 0.02
-        
-        // Adjust forward direction based on rotation
-        const direction = new THREE.Vector3(0, 0, -1)
-        direction.applyQuaternion(modelRef.current.quaternion)
-        
-        modelRef.current.position.add(direction.multiplyScalar(forwardSpeed))
-      } else {
-        // Regular forward movement when no vertical input
-        modelRef.current.position.z -= forwardSpeed
+        model.position.y += verticalInput * 0.05
+        model.rotation.x += verticalInput * 0.02
+        model.rotation.x = THREE.MathUtils.clamp(model.rotation.x, -0.8, 0.8)
       }
-      
-      // Calculate movement deltas
-      const deltaZ = modelRef.current.position.z - prevZ
-      const deltaY = modelRef.current.position.y - prevY
-      
-      // Update orbit controls target and camera to follow the model
+
+      // ALWAYS move forward in the direction the model is facing
+      const forwardDir = new THREE.Vector3(0, 0, -1).applyQuaternion(model.quaternion).normalize()
+      model.position.add(forwardDir.multiplyScalar(forwardSpeed))
+
+      // Camera follow logic
       if (controlsRef?.current) {
-        controlsRef.current.target.copy(modelRef.current.position)
-        
-        // Move camera to maintain distance
-        state.camera.position.z += deltaZ
-        state.camera.position.y += deltaY
-        
+        controlsRef.current.target.copy(model.position)
+
+        if ((CentralObject as any)._isOrbiting?.()) {
+          // Preserve user's orbit offset while following target
+          state.camera.position.copy(model.position.clone().add(prevCamOffset))
+        } else {
+          // Follow behind the model based on its orientation
+          const desiredOffsetLocal = new THREE.Vector3(0, 2, 8) // slightly above and behind
+          const desiredOffsetWorld = desiredOffsetLocal.applyQuaternion(model.quaternion)
+          const desiredCamPos = model.position.clone().add(desiredOffsetWorld)
+          state.camera.position.lerp(desiredCamPos, 0.15)
+          state.camera.lookAt(model.position)
+        }
+
         controlsRef.current.update()
       }
     }
