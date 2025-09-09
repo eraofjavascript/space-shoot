@@ -4,7 +4,7 @@ import { OrbitControls, Stars, useProgress } from '@react-three/drei'
 import { CentralObject } from './CentralObject'
 
 export const SpaceScene = () => {
-  const { active } = useProgress()
+  const { active, progress } = useProgress()
   
   return (
     <div className="relative w-full h-screen">
@@ -19,6 +19,9 @@ export const SpaceScene = () => {
             </div>
             <div className="mt-6 text-cyan-300 font-mono text-sm animate-pulse tracking-widest">
               LOADING...
+            </div>
+            <div className="mt-3 text-cyan-200 font-mono text-2xl font-bold tracking-wider">
+              {Math.round(progress)}%
             </div>
           </div>
         </div>
