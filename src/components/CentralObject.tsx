@@ -13,19 +13,15 @@ export const CentralObject = () => {
   }, [])
 
   // Continuous forward movement
-  useFrame((state) => {
+  useFrame(() => {
     if (modelRef.current) {
       // Move forward continuously at constant speed
       modelRef.current.position.z -= 0.1
-      
-      // Update camera to follow the model
-      state.camera.position.z = modelRef.current.position.z + 10
-      state.camera.lookAt(modelRef.current.position)
     }
   })
 
   return (
-    <group ref={modelRef} position={[0, 4, 0]} scale={0.6}>
+    <group ref={modelRef} position={[0, -4, 0]} scale={0.6}>
       <primitive object={scene} />
     </group>
   )
