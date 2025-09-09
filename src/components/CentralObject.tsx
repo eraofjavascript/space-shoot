@@ -85,15 +85,26 @@ export const CentralObject = ({ controlsRef }: { controlsRef?: React.RefObject<a
         controlsRef.current.target.copy(model.position)
 
         if ((CentralObject as any)._isOrbiting?.()) {
-          // Preserve user's orbit offset while following target
-          state.camera.position.copy(model.position.clone().add(prevCamOffset))
+          // During orbit, maintain relative offset but don't interfere with user control
+          const newOffset = state.camera.position.clone().sub(controlsRef.current.target)
+          state.camera.position.copy(model.position.clone().add(newOffset))
         } else {
-          // Follow behind the model based on its orientation
-          const desiredOffsetLocal = new THREE.Vector3(0, 2, 8) // slightly above and behind
-          const desiredOffsetWorld = desiredOffsetLocal.applyQuaternion(model.quaternion)
-          const desiredCamPos = model.position.clone().add(desiredOffsetWorld)
-          state.camera.position.lerp(desiredCamPos, 0.15)
-          state.camera.lookAt(model.position)
+          // Follow behind the model smoothly with proper quaternion-based positioning
+          const cameraOffset = new THREE.Vector3(0, 2, 8)
+          
+          // Apply model's rotation to the offset vector
+          const rotatedOffset = cameraOffset.clone().applyQuaternion(model.quaternion)
+          const targetCameraPos = model.position.clone().add(rotatedOffset)
+          
+          // Smooth camera transition to avoid jarring movements
+          state.camera.position.lerp(targetCameraPos, 0.1)
+          
+          // Make camera look at model with smooth rotation
+          const lookDirection = model.position.clone().sub(state.camera.position).normalize()
+          const targetQuaternion = new THREE.Quaternion().setFromRotationMatrix(
+            new THREE.Matrix4().lookAt(state.camera.position, model.position, new THREE.Vector3(0, 1, 0))
+          )
+          state.camera.quaternion.slerp(targetQuaternion, 0.1)
         }
 
         controlsRef.current.update()
